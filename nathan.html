@@ -1,0 +1,302 @@
+<!DOCTYPE HTML>
+	<html>
+
+		<head>
+        	<link rel="stylesheet" type="text/css" href="style3.css" />
+        	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        	<style type="text/css">
+
+			.drag{
+			position:relative;
+			cursor:hand;
+			z-index: 100;
+			}
+
+			form{
+			background-image:url(./img/PPC_WINDOW_CONSOLE.png);
+			background-repeat:no-repeat;
+			height: 490px;
+			width: 421px;
+			font-family:Tahoma;
+			font-size:14px;
+			color:#781351;
+			visibility: hidden;
+			}
+
+			.consoleBox{
+				position: absolute;
+				top: 435px;
+				left: 20px;
+			}
+
+			input, textarea{
+				color: #00ff00;
+				background-color: black;
+				font-family: "Courier New";
+			}
+
+			</style>
+
+			<script type="text/javascript">
+
+					if (document.addEventListener) {
+			        document.addEventListener('contextmenu', function(e) {
+			            //here you draw your own menu
+			            e.preventDefault();
+			            console.log("rightclicked")
+			            document.getElementById("context_menu").style.top = e.clientY + "px";
+		    				document.getElementById("context_menu").style.left = e.clientX + "px";
+		    				document.getElementById("context_menu").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#context_menu").show();
+			        }, false);
+			    } else {
+			        document.attachEvent('oncontextmenu', function() {
+			            window.event.returnValue = false;
+			        });
+			    }
+
+					var dragobject={
+						z: 0, x: 0, y: 0, offsetx : null, offsety : null, targetobj : null, dragapproved : 0,
+						initialize:function(){
+						document.onmousedown=this.drag
+						document.onmouseup=function(){this.dragapproved=0}
+					},
+					drag:function(e){
+						var evtobj=window.event? window.event : e
+						this.targetobj=window.event? event.srcElement : e.target
+						if (this.targetobj.className=="drag"){
+							this.dragapproved=1
+							if (isNaN(parseInt(this.targetobj.style.left))){this.targetobj.style.left=0}
+							if (isNaN(parseInt(this.targetobj.style.top))){this.targetobj.style.top=0}
+							this.offsetx=parseInt(this.targetobj.style.left)
+							this.offsety=parseInt(this.targetobj.style.top)
+							this.x=evtobj.clientX
+							this.y=evtobj.clientY
+							if (evtobj.preventDefault)
+							evtobj.preventDefault()
+							document.onmousemove=dragobject.moveit
+						}
+					},
+					moveit:function(e){
+					var evtobj=window.event? window.event : e
+					if (this.dragapproved==1){
+					this.targetobj.style.left=this.offsetx+evtobj.clientX-this.x+"px"
+					this.targetobj.style.top=this.offsety+evtobj.clientY-this.y+"px"
+					return false
+					}
+					}
+					}
+
+					dragobject.initialize()
+
+
+
+			</script>
+
+    	</head>
+
+	
+		<body oncontextmenu="return false">
+
+			<!-- Load Audio files -->
+			<div>
+				<audio id = "mus_intro" oncanplaythrough = "this.play();">
+			        <source src="mus/ppc_intro.wav"></source>
+			        Your browser doesn't support audio playback
+	    		</audio>
+
+	    		 <audio id = "mus_error">
+	                <source src ="mus/Error.wav"></source>
+	            </audio>
+
+	            <audio id = "mus_open">
+	                <source src ="mus/OpenFile.wav"></source>
+	            </audio>
+
+	            <audio id = "mus_click">
+	                <source src ="mus/ClickSound.wav"></source>
+	            </audio>
+       		</div>
+
+       		<!--Load Image files -->
+       		<div>
+    			<img id = "invalid_permissions" src="./img/PPC_DIALOG_BOX_ERROR.png" class="drag" usemap="Error_Dialog" style="visibility: hidden; position:absolute; left: 50px; top: 100px;"></img>
+    			<img id = "invalid_password" src="./img/PPC_DIALOG_BOX_ERROR_2.png" class="drag" usemap="Error_Dialog_2" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "context_menu" src="./img/PPC_CONTEXT_MENU.png" usemap="Context_menu" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_icon" src="./img/nathan/email-close.png" usemap="" style="visibility: visible; width:64px; position:absolute; left: 480px; top: 50px;"></img>
+    			<img id = "chat_icon" src="./img/nathan/msg.png" usemap="" style="visibility: visible; width:64px; position:absolute; width:64px; left: 280px; top: 50px;"></img>
+    			<img id = "trash" src="./img/nathan/trash.png" usemap="" style="visibility: visible; width:32px; position:absolute; left: 180px; top: 50px;"></img>
+    			<img id = "family-icon" src="./img/nathan/NATHAN_FAMILY_ICON.png" usemap="" style="visibility: visible; position:absolute; width: 128px; left: 800px; top: 90px;"></img>
+    			<img id = "start_menu" src="./img/nathan/NATHAN_START_MENU.png" usemap="" style="visibility: visible; position:absolute; left: 0px; top: 515px;"></img>
+    			<img id = "text_file" src="./img/nathan/file.png" usemap="" style="visibility: visible; position:absolute; width: 64px; left: 0px; top: 200px;"></img>
+
+
+    			<!-- Console Item -->
+	    		<form id="form1" name="form1" method="post" action="" class="drag">
+					<br/>
+					<a href="javascript:close_item('console')" style="display:block; width:17px; height:20px; position:absolute; left: 380px; top: 17x;"></a>
+					<!--<input type="textarea" value="" id = "consoleOutput" class="field left" readonly style = "width: 383px; height: 360px; position: absolute; top: 65px; left:16px;"> -->
+					<textarea id = "consoleOutput" name="Text1" cols="40" rows="5" style = "width: 383px; height: 360px; position: absolute; top: 65px; left:16px;" readonly></textarea>
+					<div class = "consoleBox">
+						<input type="text" name="textfield" id="textfield" style = "width:375px" />
+						</div>
+				</form>
+		
+    		</div>
+
+    		<!--Load Clickable Areas (To Be Deleted) -->
+    		<div>
+	    		<a id = "Console" href="javascript:open_item('console')" style="display:block; width:90px; height:33px; position:absolute; left: 242px; top: 341px;">
+	    		</a>
+			</div>
+
+			<!--Load Image Maps-->
+			<div>
+	    		<map name="Error_Dialog">
+					  <area shape="rect" coords="381, 23, 400, 41" href = "javascript:close_item('invalid_permissions')" >
+				<map name="Error_Dialog_2">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('invalid_password')" >
+				<map name="Email_All">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_all')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('invalid_password')" >
+				<map name="Context_Menu">
+					  <area shape="rect" coords="8, 70, 133, 105" href = "javascript:open_item('console')" >
+			</div>
+			
+			<!--Main Script-->
+			<script type="text/javascript">
+    			var myAudio = document.getElementById("mus_intro");
+    			var ErrorSound = document.getElementById("mus_error");
+    			var OpenFileSound = document.getElementById("mus_open");
+    			var ClickSound = document.getElementById("mus_click");
+
+    			var savedCommand;
+
+    			myAudio.oncanplaythrough = function () {this.play();}
+
+    			function close_item(item){
+    				switch(item){
+    					case "console":
+    						$("#form1").hide();
+    						document.getElementById("consoleOutput").value = "";
+					    	document.getElementById("textfield").value = "";
+    						break;
+    					case "invalid_permissions":
+    						$("#invalid_permissions").hide();
+    						break;
+    					case "invalid_password":
+    						$("#invalid_password").hide();
+    						break;
+    				}
+    				ClickSound.play();
+    			}
+
+    			function open_item(item){
+    				switch(item){
+    					case "console":
+    						document.getElementById("form1").style.top = 250 + "px";
+		    				document.getElementById("form1").style.left = 250 + "px";
+		    				document.getElementById("form1").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#form1").show();
+    						break;
+    					case "local_files":
+    						document.getElementById("invalid_permissions").style.top = 250 + "px";
+		    				document.getElementById("invalid_permissions").style.left = 250 + "px";
+		    				document.getElementById("invalid_permissions").style.visibility = "visible";
+		    				ErrorSound.play();
+		    				$("#invalid_permissions").show();
+		    				break;
+		    			case "email":
+		    				
+		    				break;
+		    			case "invalid_password":
+		    				document.getElementById("invalid_password").style.top = 50 + "px";
+		    				document.getElementById("invalid_password").style.left = 50 + "px";
+		    				document.getElementById("invalid_password").style.visibility = "visible";
+		    				ErrorSound.play();
+		    				$("#invalid_password").show();
+		    				break;
+    				}
+    			}
+
+    			<!--Console Handling-->
+    			$('#textfield').keypress(function (e) {
+    			
+
+				  if (e.which == 13) {
+				    var value = $('#textfield').val();
+				    savedCommand = value;
+				    console.log(value);
+
+				    switch(value){
+				    	case "clear":
+					    	document.getElementById("consoleOutput").value = "";
+					    	document.getElementById("textfield").value = "";
+					    	return false;
+
+					    case "hello":
+					    	document.getElementById("textfield").value = "";
+					    	document.getElementById("consoleOutput").value += ("[1527@SecureNetwork ~] hello world");
+					    	document.getElementById("consoleOutput").value += "\n";
+					    	return false;
+
+					    case "help":
+					    	document.getElementById("textfield").value = "";
+					    	document.getElementById("consoleOutput").value += ("[1527@SecureNetwork ~] Please see your training manual for reference.");
+					    	document.getElementById("consoleOutput").value += "\n";
+					    	return false;
+
+					   	case "open pipeline":
+					   		document.getElementById("textfield").value = "";
+					    	document.getElementById("consoleOutput").value += ("[1527@SecureNetwork ~] Initializing virtual desktop");
+					    	//OpenFile.play();
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("."); }, 1600 );
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("."); }, 2400 );
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("."); }, 3200 );
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("\n"); }, 3200 );
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("\n"); }, 4001 );
+					    	setTimeout( function() { document.getElementById("consoleOutput").value += ("[1527@SecureNetwork ~] Load complete. Launching transfer to remote desktop"); }, 4000 );
+					    	//setTimeout( function() { OpenFile.play(); }, 2600 );
+					    	return false;
+
+					    default:
+					    	document.getElementById("textfield").value = "";
+					    	document.getElementById("consoleOutput").value += ("[1527@SecureNetwork ~] ERROR: Invalid Command '"+value+"'");
+					    	document.getElementById("consoleOutput").value += "\n";
+					    	return false;
+				    }
+
+					//document.getElementById("textfield").value = "";
+					//document.getElementById("consoleOutput").value += ("[EMPLOYEE-1527@SecureNetwork ~] "+value);
+					//document.getElementById("consoleOutput").value += "\n";
+				    //return false;    //<---- Add this line
+				  }
+
+				  /*else if (e.which == 38){
+				  	console.log("testing");
+				  	document.getElementById("textfield").value = savedCommand;
+				  }*/
+				});
+
+				
+				$('#textfield').keydown(function (e) {
+				  if (e.which == 38){
+				  	document.getElementById("textfield").value = savedCommand;
+				}
+
+				});
+
+				$('body').click(function(){
+					$("#context_menu").hide();
+				});
+
+    		</script>
+
+		</body>
+
+
+	</html>

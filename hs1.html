@@ -1,0 +1,714 @@
+<!DOCTYPE HTML>
+	<html>
+
+		<head>
+        	<link rel="stylesheet" type="text/css" href="style2.css" />
+        	<script src="consoleScript.js" type="text/javascript"></script>
+        	<script src="pipelineGame.js" type="text/javascript"></script>
+        	<script src="manualSource.js" type="text/javascript"></script>
+        	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        	<style type="text/css">
+
+			.drag{
+			position:relative;
+			cursor:hand;
+			z-index: 100;
+			}
+
+			form{
+			background-image:url(./img/PPC_WINDOW_CONSOLE.png);
+			background-repeat:no-repeat;
+			height: 490px;
+			width: 421px;
+			font-family:Tahoma;
+			font-size:14px;
+			color:#781351;
+			visibility: hidden;
+			}
+
+			.consoleForm{
+				background-image:url(./img/PPC_WINDOW_CONSOLE.png);
+			background-repeat:no-repeat;
+			height: 490px;
+			width: 421px;
+			font-family:Tahoma;
+			font-size:14px;
+			color:#781351;
+			visibility: hidden;
+			}
+
+			.consoleBox{
+				position: absolute;
+				top: 435px;
+				left: 20px;
+			}
+
+			.consoleStyle{
+				color: #00ff00;
+				background-color: black;
+				font-family: "Courier New";
+			}
+			/*input, textarea{
+				color: #00ff00;
+				background-color: black;
+				font-family: "Courier New";
+			}*/
+
+			.manual{
+				color: #781351;
+				background-image: url(./img/PPC_WINDOW_MANUAL_OVERVIEW.png);
+				background-repeat:no-repeat;
+			}
+
+			</style>
+
+			<script type="text/javascript">
+
+					if (document.addEventListener) {
+			        document.addEventListener('contextmenu', function(e) {
+			            //here you draw your own menu
+			            e.preventDefault();
+			            console.log("rightclicked")
+			            document.getElementById("context_menu").style.top = e.clientY + "px";
+		    				document.getElementById("context_menu").style.left = e.clientX + "px";
+		    				document.getElementById("context_menu").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#context_menu").show();
+			        }, false);
+			    } else {
+			        document.attachEvent('oncontextmenu', function() {
+			            window.event.returnValue = false;
+			        });
+			    }
+
+					var dragobject={
+						z: 0, x: 0, y: 0, offsetx : null, offsety : null, targetobj : null, dragapproved : 0,
+						initialize:function(){
+						document.onmousedown=this.drag
+						document.onmouseup=function(){this.dragapproved=0}
+					},
+					drag:function(e){
+						var evtobj=window.event? window.event : e
+						this.targetobj=window.event? event.srcElement : e.target
+						if (this.targetobj.className=="drag"){
+							this.dragapproved=1
+							if (isNaN(parseInt(this.targetobj.style.left))){this.targetobj.style.left=0}
+							if (isNaN(parseInt(this.targetobj.style.top))){this.targetobj.style.top=0}
+							this.offsetx=parseInt(this.targetobj.style.left)
+							this.offsety=parseInt(this.targetobj.style.top)
+							this.x=evtobj.clientX
+							this.y=evtobj.clientY
+							if (evtobj.preventDefault)
+							evtobj.preventDefault()
+							document.onmousemove=dragobject.moveit
+						}
+					},
+					moveit:function(e){
+					var evtobj=window.event? window.event : e
+					if (this.dragapproved==1){
+					this.targetobj.style.left=this.offsetx+evtobj.clientX-this.x+"px"
+					this.targetobj.style.top=this.offsety+evtobj.clientY-this.y+"px"
+					return false
+					}
+					}
+					}
+
+					dragobject.initialize()
+
+
+
+			</script>
+
+    	</head>
+
+	
+		<body oncontextmenu="return false">
+
+			<!-- Load Audio files -->
+			<div>
+				<audio id = "mus_intro" oncanplaythrough = "this.play();">
+			        <source src="mus/ppc_intro.wav"></source>
+			        Your browser doesn't support audio playback
+	    		</audio>
+
+	    		 <audio id = "mus_error">
+	                <source src ="mus/Error.wav"></source>
+	            </audio>
+
+	            <audio id = "mus_open">
+	                <source src ="mus/OpenFile.wav"></source>
+	            </audio>
+
+	            <audio id = "mus_click">
+	                <source src ="mus/ClickSound.wav"></source>
+	            </audio>
+
+	            <audio id = "mus_warning">
+	                <source src ="mus/message_encrypted.wav"></source>
+	            </audio>
+       		</div>
+
+       		<!--Load Image files -->
+       		<div>
+    			<img id = "invalid_permissions" src="./img/PPC_DIALOG_BOX_ERROR.png" class="drag" usemap="Error_Dialog" style="visibility: hidden; position:absolute; left: 50px; top: 100px;"></img>
+    			<img id = "email_first" src="./img/PPC_WINDOW_FIRST_EMAIL_DIALOG.png" class="drag" usemap="Email_First" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_1" src="./img/PPC_WINDOW_EMAIL_1.png" class="drag" usemap="Email_1" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_2" src="./img/PPC_WINDOW_EMAIL_2.png" class="drag" usemap="Email_2" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_all" src="./img/PPC_WINDOW_EMAIL_ALL.png" class="drag" usemap="Email_All" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_final" src="./img/PPC_WINDOW_EMAIL_FINAL.png" class="drag" usemap="Email_Final" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_welcome" src="./img/PPC_WINDOW_EMAIL_WELCOME.png" class="drag" usemap="email_welcome" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_boss_1" src="./img/PPC_WINDOW_EMAIL_BOSS_1.png" class="drag" usemap="email_boss_1" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_boss_2" src="./img/PPC_WINDOW_EMAIL_BOSS_2.png" class="drag" usemap="email_boss_2" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "invalid_password" src="./img/PPC_DIALOG_BOX_ERROR_2.png" class="drag" usemap="Error_Dialog_2" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "context_menu" src="./img/PPC_CONTEXT_MENU.png" usemap="Context_menu" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			<img id = "email_anon" src="./img/PPC_WINDOW_EMAIL_ANON.png" class="drag" usemap="Email_Anon" style="visibility: hidden; position:absolute; left: 50px; top: 50px;"></img>
+    			
+    			<!--Icons-->
+    			<a href="javascript:open_item('local_files')" style="visibility: visibile; position:absolute; left: 377px; top: 200px;">
+    				<img id = "icon_local_files" src="./img/ICON_LOCAL_FILES.png" ></img>
+    				<img id = "alert_bubble_localfiles" src="./img/PPC_ALERT_BUBBLE.png" style="visibility: visbile; position:absolute; left: 0px; top: 0px; width: 16px; height: 16px;"></img></a>
+
+    			<a href="javascript:open_item('email')" style="visibility: visibile; position:absolute; left: 877px; top: 200px; ">
+    				<img id = "icon_email" src="./img/ICON_EMAIL.png" ></img>
+    				<img id = "alert_bubble_email" src="./img/PPC_ALERT_BUBBLE.png" style="visibility: visibile; position:absolute; left: 0px; top: 0px; width: 16px; height: 16px;"></img></a>
+
+    			<a href="javascript:open_item('manual')" style="visibility: visibile; position:absolute; left: 377px;  top: 400px">
+    				<img id = "icon_training" src="./img/ICON_TRAINING.png"></img>
+    				<img id = "alert_bubble_training" src="./img/PPC_ALERT_BUBBLE.png" style="visibility: visibile; position:absolute; left: 0px; top: 0px; width: 16px; height: 16px;"></img></a>
+
+    			<a href="javascript:open_item('console')" style="visibility: visibile; position:absolute; left: 877px;  top: 400px;">
+    				<img id = "icon_console" src="./img/ICON_CONSOLE.png" ></img>
+    				<img id = "alert_bubble_console" src="./img/PPC_ALERT_BUBBLE.png" style="visibility: visbile; position:absolute; left: 0px; top: 0px; width: 16px; height: 16px;"></img></a>
+
+
+    			<!-- Console Item -->
+	    		<form id="form1" name="form1" method="post" action="" class="drag">
+					<br/>
+					<a href="javascript:close_item('console')" style="display:block; width:17px; height:20px; position:absolute; left: 380px; top: 17px;"></a>
+					<!--<input type="textarea" value="" id = "consoleOutput" class="field left" readonly style = "width: 383px; height: 360px; position: absolute; top: 65px; left:16px;"> -->
+					<textarea id = "consoleOutput" name="Text1" cols="40" rows="5" class ="consoleStyle" style = "width: 383px; height: 360px; position: absolute; top: 65px; left:16px;" readonly></textarea>
+					<div class = "consoleBox">
+						<input type="text" name="textfield" id="textfield" style = "width:375px" class = "consoleStyle"/>
+						</div>
+				</form>
+
+
+				<!--Manual Item-->
+				<div id = "manual_window" style="background-image: url(./img/PPC_WINDOW_MANUAL_OVERVIEW.png); background-repeat:no-repeat; height: 510px; width: 421px; visibility: hidden; position: absolute; top: 400px; left: 100px;" class ="drag">
+					<a href="javascript:close_item('manual')" style="display:block; width:17px; height:20px; position:absolute; left: 380px; top: 17px;"></a>
+					<a href="javascript:open_tab('overview')" style="display:block; width:62px; height:24px; position:absolute; left: 17px; top: 50px;"></a>
+					<a href="javascript:open_tab('history')" style="display:block; width:62px; height:24px; position:absolute; left: 87px; top: 50px;"></a>
+					<a href="javascript:open_tab('example')" style="display:block; width:62px; height:24px; position:absolute; left: 157px; top: 50px;"></a>
+					<a href="javascript:open_tab('reference')" style="display:block; width:62px; height:24px; position:absolute; left: 227px; top: 50px;"></a>
+					<a href="javascript:open_page_back()" style="display:block; width:25px; height:25px; position:absolute; left: 321px; top: 473px;"></a>
+					<a href="javascript:open_page()" style="display:block; width:25px; height:25px; position:absolute; left: 361px; top: 473px;"></a>
+					<!--<img src="./img/PPC_WINDOW_MANUAL_OVERVIEW.png" class="drag"></img>-->
+					<textarea id = "manualOutput" name="Text2" cols="40" rows="5" style = "width: 383px; height: 375px; position: absolute; left: 15px; top: 80px;" readonly></textarea>
+				</div>
+		
+    		</div>
+
+			<!--Load Image Maps-->
+			<div>
+	    		<map name="Error_Dialog">
+					  <area shape="rect" coords="381, 23, 400, 41" href = "javascript:close_item('invalid_permissions')" >
+				<map name="Error_Dialog_2">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('invalid_password')" >
+				<map name="Email_First">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_first')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('email_anon')" >
+				<map name="Email_All">
+					  <area shape="rect" coords="380, 15, 404, 37" href = "javascript:close_item('email_all')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('email_anon')" >
+				
+
+				<map name="Email_Final">
+					  <area shape="rect" coords="374, 13, 390, 34" href = "javascript:close_item('email_final')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_boss_2')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 235, 392, 275" href = "javascript:open_item('email_anon')" >
+
+
+				<map name="Email_1">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_1')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('email_anon')" >
+				<map name="Email_2">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_2')" >
+					  <area shape="rect" coords="38, 64, 392, 103" href = "javascript:open_item('email_boss_1')" >
+					  <area shape="rect" coords="38, 121, 392, 164" href = "javascript:open_item('email_welcome')" >
+					  <area shape="rect" coords="38, 182, 392, 214" href = "javascript:open_item('email_anon')" >
+				<map name="Email_Welcome">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_welcome')" >
+				<map name="Email_Anon">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_anon')" >
+				<map name="Email_Boss_1">
+					  <area shape="rect" coords="386, 19, 404, 37" href = "javascript:close_item('email_boss_1')" >
+				<map name="Email_Boss_2">
+					  <area shape="rect" coords="375, 13, 390, 34" href = "javascript:close_item('email_boss_2')" >
+				<map name="Context_Menu">
+					  <area shape="rect" coords="8, 70, 133, 105" href = "javascript:open_item('console')" >
+					  <area shape="rect" coords="8, 5, 133, 30" href = "javascript:open_item('invalid_permissions')" >
+					  <area shape="rect" coords="8, 31, 133, 65" href = "javascript:open_item('invalid_permissions')" >
+					  <area shape="rect" coords="8, 130, 133, 156" href = "javascript:open_item('invalid_permissions')" >
+			</div>
+			
+
+			<script type="text/javascript">
+    			var myAudio = document.getElementById("mus_intro");
+    			var ErrorSound = document.getElementById("mus_error");
+    			var OpenFileSound = document.getElementById("mus_open");
+    			var ClickSound = document.getElementById("mus_click");
+    			var MessageSound = document.getElementById("mus_warning");
+
+    			var emailState = "none-read";
+    			var decodedEmail = false;
+    			var savedCommand;
+    			var PERMISSION_STATUS = "SYSTEM_ADMIN_1";
+    			var confirmState = false;
+    			var pipelineOpen = false;
+    			var completedWork = false;
+    			var currentTab = "overview";
+    			var overview_content = "";
+    			var history_content = "";
+    			var example_content = "";
+
+    			var overview_page_num = 1;
+    			var history_page_num = 1;
+    			var example_page_num = 1;
+    			var reference_page_num = 1;
+
+    			var reference_content = reference_page_1;
+
+    			myAudio.oncanplaythrough = function () {this.play();}
+
+    			function close_item(item){
+    				switch(item){
+    					case "console":
+    						$("#form1").hide();
+    						document.getElementById("consoleOutput").value = "";
+					    	document.getElementById("textfield").value = "";
+    						break;
+    					case "manual":
+    						$("#manual_window").hide();
+    						break;
+    					case "invalid_permissions":
+    						$("#invalid_permissions").hide();
+    						break;
+    					case "email_first":
+    						$("#email_first").hide();
+    						break
+    					case "email_1":
+    						$("#email_1").hide();
+    						break;
+    					case "email_2":
+    						$("#email_2").hide();
+    						break;
+    					case "email_all":
+    						$("#email_all").hide();
+    						break;
+    					case "email_final":
+    						$("#email_final").hide();
+    						break;
+    					case "email_boss_1":
+    						$("#email_boss_1").hide();
+    						break;
+    					case "email_boss_2":
+    						$("#email_boss_2").hide();
+    						break;
+    					case "email_welcome":
+    						$("#email_welcome").hide();
+    						break;
+    					case "invalid_password":
+    						$("#invalid_password").hide();
+    						break;
+    					case "email_anon":
+    						$("#email_anon").hide();
+    						MessageSound.stop();
+    						break;
+    				}
+    				ClickSound.play();
+    			}
+
+    			function open_item(item){
+    				switch(item){
+    					case "invalid_permissions":
+    						document.getElementById("invalid_permissions").style.top = 250 + "px";
+		    				document.getElementById("invalid_permissions").style.left = 250 + "px";
+		    				document.getElementById("invalid_permissions").style.visibility = "visible";
+		    				ErrorSound.play();
+		    				$("#invalid_permissions").show();
+    						break;
+    					case "console":
+    						document.getElementById("form1").style.top = 150 + "px";
+		    				document.getElementById("form1").style.left = 400 + "px";
+		    				document.getElementById("form1").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#form1").show();
+		    				document.getElementById("consoleOutput").value += "[1527 ~] Welcome, [EMPLOYEE-1527]!\n";
+		    				$("#alert_bubble_console").hide();
+    						break;
+    					case "manual":
+    						document.getElementById("manual_window").style.top = 120 + "px";
+		    				document.getElementById("manual_window").style.left = 370 + "px";
+		    				document.getElementById("manual_window").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				renderPage('overview', 1);
+		    				$("#manual_window").show();
+		    				$("#alert_bubble_training").hide();
+		    				break;
+    					case "local_files":
+    						document.getElementById("invalid_permissions").style.top = 150 + "px";
+		    				document.getElementById("invalid_permissions").style.left = 400 + "px";
+		    				document.getElementById("invalid_permissions").style.visibility = "visible";
+		    				ErrorSound.play();
+		    				$("#invalid_permissions").show();
+		    				$("#alert_bubble_localfiles").hide();
+		    				break;
+		    			case "email":
+		    				if(completedWork == true){
+		    					document.getElementById("email_final").style.top = 150 + "px";
+			    				document.getElementById("email_final").style.left = 350 + "px";
+			    				document.getElementById("email_final").style.visibility = "visible";
+			    				OpenFileSound.play();
+			    				$("#email_final").show();
+		    				}
+		    				else if(emailState == "none-read"){
+			    				document.getElementById("email_first").style.top = 250 + "px";
+			    				document.getElementById("email_first").style.left = 350 + "px";
+			    				document.getElementById("email_first").style.visibility = "visible";
+			    				OpenFileSound.play();
+			    				$("#email_first").show();
+			    			}
+			    			else if(emailState == "email_1_read"){
+			    				document.getElementById("email_1").style.top = 150 + "px";
+			    				document.getElementById("email_1").style.left = 350 + "px";
+			    				document.getElementById("email_1").style.visibility = "visible";
+			    				OpenFileSound.play();
+			    				$("#email_1").show();
+			    			}
+			    			else if(emailState == "email_2_read"){
+			    				document.getElementById("email_2").style.top = 150 + "px";
+			    				document.getElementById("email_2").style.left = 350 + "px";
+			    				document.getElementById("email_2").style.visibility = "visible";
+			    				OpenFileSound.play();
+			    				$("#email_2").show();
+			    			}
+			    			else if(emailState == "email_1_2_read"){
+			    				document.getElementById("email_all").style.top = 150 + "px";
+			    				document.getElementById("email_all").style.left = 350 + "px";
+			    				document.getElementById("email_all").style.visibility = "visible";
+			    				OpenFileSound.play();
+			    				$("#email_all").show();
+			    			}
+		    				break;
+		    			case "email_boss_1":
+		    				document.getElementById("email_boss_1").style.top = 150 + "px";
+		    				document.getElementById("email_boss_1").style.left = 350 + "px";
+		    				document.getElementById("email_boss_1").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#email_boss_1").show();
+		    				if(emailState == "email_1_2_read") emailState = "email_1_2_read" ;
+		    				else if(emailState == "email_2_read") {
+		    					emailState = "email_1_2_read";
+		    					$("#alert_bubble_email").hide();
+		    				}
+		    				else {
+		    					emailState = "email_1_read";
+		    				}
+		    				break;
+		    			case "email_boss_2":
+		    				document.getElementById("email_boss_2").style.top = 150 + "px";
+		    				document.getElementById("email_boss_2").style.left = 350 + "px";
+		    				document.getElementById("email_boss_2").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#email_boss_2").show();
+		    				break;
+		    			case "email_welcome":
+		    				document.getElementById("email_welcome").style.top = 150 + "px";
+		    				document.getElementById("email_welcome").style.left = 350 + "px";
+		    				document.getElementById("email_welcome").style.visibility = "visible";
+		    				OpenFileSound.play();
+		    				$("#email_welcome").show();
+		    				if(emailState == "email_1_2_read") emailState = "email_1_2_read";
+		    				else if(emailState == "email_1_read"){
+		    					emailState = "email_1_2_read";
+		    					$("#alert_bubble_email").hide();
+		    				} 
+		    				else emailState = "email_2_read";
+		    				break;
+		    			case "invalid_password":
+		    				document.getElementById("invalid_password").style.top = 150 + "px";
+		    				document.getElementById("invalid_password").style.left = 350 + "px";
+		    				document.getElementById("invalid_password").style.visibility = "visible";
+		    				ErrorSound.play();
+		    				$("#invalid_password").show();
+		    				break;
+		    			case "email_anon":
+		    				if(decodedEmail == false){
+			    				document.getElementById("invalid_password").style.top = 250 + "px";
+			    				document.getElementById("invalid_password").style.left = 400 + "px";
+			    				document.getElementById("invalid_password").style.visibility = "visible";
+			    				ErrorSound.play();
+			    				console.log("not gotten yet");
+			    				$("#invalid_password").show();
+			    				break;
+							}
+							else {
+								document.getElementById("email_anon").style.top = 150 + "px";
+		    					document.getElementById("email_anon").style.left = 400 + "px";
+		    					document.getElementById("email_anon").style.visibility = "visible";
+		    					OpenFileSound.play();
+		    					$("#email_anon").show();
+		    					setTimeout( function() { MessageSound.play(); }, 500 );
+							}
+    				}
+    			}
+
+    			function open_tab(item){
+    				switch(item){
+    					case 'overview':
+	    					document.getElementById("manual_window").style.backgroundImage='url(./img/PPC_WINDOW_MANUAL_OVERVIEW.png)';
+	    					renderPage(item, overview_page_num);
+	    					currentTab = "overview";
+	    					break;
+    					case 'history':
+	    					document.getElementById("manual_window").style.backgroundImage='url(./img/PPC_WINDOW_MANUAL_HISTORY.png)';
+	    					renderPage(item, history_page_num);
+	    					currentTab = "history";
+	    					break;
+    					case 'example':
+    						document.getElementById("manual_window").style.backgroundImage='url(./img/PPC_WINDOW_MANUAL_EXAMPLE.png)';
+    						renderPage(item, example_page_num);
+    						currentTab = "example";
+    						break;
+    					case 'reference':
+    						document.getElementById("manual_window").style.backgroundImage='url(./img/PPC_WINDOW_MANUAL_REFERENCE.png)';
+    						renderPage(item, reference_page_num);
+    						currentTab = "reference";
+    						break;
+    				}
+
+    			}
+
+    			function open_page(){
+    				switch(currentTab){
+    					case 'overview':
+    						if(overview_page_num < 4) overview_page_num++;
+    						renderPage(currentTab, overview_page_num);
+    						break;
+    					case 'history':
+    						if(history_page_num < 4) history_page_num++;
+    						renderPage(currentTab, history_page_num);
+    						break;
+    					case 'example':
+    						if(example_page_num < 4) example_page_num++;
+    						renderPage(currentTab, example_page_num);
+    					break;
+    					case 'reference':
+    						if(reference_page_num < 4) reference_page_num++;
+    						renderPage(currentTab, reference_page_num);
+    					break;
+    				}
+
+    			}
+
+    			function open_page_back(){
+    				switch(currentTab){
+    					case 'overview':
+    						if(overview_page_num > 1) overview_page_num--;
+    						renderPage(currentTab, overview_page_num);
+    						break;
+    					case 'history':
+    						if(history_page_num > 1) history_page_num--;
+    						renderPage(currentTab, history_page_num);
+    						break;
+    					case 'example':
+    						if(example_page_num > 1) example_page_num--;
+    						renderPage(currentTab, example_page_num);
+    						break;
+    					case 'reference':
+    						if(reference_page_num > 1) reference_page_num--;
+    						renderPage(currentTab, reference_page_num);
+    						break;
+    				}
+
+    			}
+
+    			function renderPage(tab, pageNum){
+    				switch(tab){
+    					case 'overview':
+    						switch(pageNum){
+    							case 1:
+    								document.getElementById("manualOutput").value = overview_page_1;
+    								break;
+    							case 2:
+    								document.getElementById("manualOutput").value = overview_page_2;
+    								break;
+    							case 3:
+    								document.getElementById("manualOutput").value = overview_page_3;
+    								break;
+    							case 4:
+    								document.getElementById("manualOutput").value = overview_page_4;
+    								break;
+    						}
+    					break;
+    					case 'history':
+    						switch(pageNum){
+    							case 1:
+    								document.getElementById("manualOutput").value = history_page_1;
+    								break;
+    							case 2:
+    								document.getElementById("manualOutput").value = history_page_2;
+    								break;
+    							case 3:
+    								document.getElementById("manualOutput").value = history_page_3;
+    								break;
+    							case 4:
+    								document.getElementById("manualOutput").value = history_page_4;
+    								break;
+    						}
+    					break;
+    					case 'example':
+    						switch(pageNum){
+    							case 1:
+    								document.getElementById("manualOutput").value = example_page_1;
+    								break;
+    							case 2:
+    								document.getElementById("manualOutput").value = example_page_2;
+    								break;
+    							case 3:
+    								document.getElementById("manualOutput").value = example_page_3;
+    								break;
+    							case 4:
+    								document.getElementById("manualOutput").value = example_page_4;
+    								break;
+    						}
+    						break;
+    					case 'reference':
+    						switch(pageNum){
+    							case 1:
+    								document.getElementById("manualOutput").value = reference_page_1;
+    								break;
+    							case 2:
+    								document.getElementById("manualOutput").value = reference_page_2;
+    								break;
+    							case 3:
+    								document.getElementById("manualOutput").value = reference_page_3;
+    								break;
+    							case 4:
+    								document.getElementById("manualOutput").value = reference_page_4;
+    								break;
+    						}
+    						break;
+    					break;
+    				}
+    			}
+
+
+    			$('#textfield').keypress(function (e) {
+
+    			  //Enter Key Pressed
+				  if (e.which == 13){
+				    var value = $('#textfield').val();
+				    savedCommand = value;
+				    resetConsole(value);
+
+
+				    if(pipelineOpen){
+				    	handleGameInput(value);
+				    	return false;
+				    }
+
+				    //Check whether pipeline should open
+				    if(confirmState){
+				    	switch(value){
+							case ("y"):
+								pipelineOpen = true;
+								document.getElementById("consoleOutput").value += ("CONFIRMED. Beginning pipeline extraction");
+								animateLoading();
+								setTimeout( function() { clearCommand() }, 4200 );
+								setTimeout( function() { animatePipelineLoading() }, 4300 );
+								break;
+							case ("Y"):
+								pipelineOpen = true;
+								document.getElementById("consoleOutput").value += ("CONFIRMED. Beginning pipeline extraction");
+								animateLoading();
+								setTimeout( function() { clearCommand() }, 4200 );
+								setTimeout( function() { animatePipelineLoading() }, 4300 );
+								break;
+							case ("n"):
+								document.getElementById("consoleOutput").value += ("Extract aborted.\n");
+								break;
+							case ("N"):
+								document.getElementById("consoleOutput").value += ("Extract aborted.\n");
+								break;
+							default:
+								document.getElementById("consoleOutput").value += ("Error: Invalid response. Extract aborted.\n");
+								break;
+						}
+				    	confirmState = false;
+				    	return false;
+				    }
+
+				    //Default Console Response
+				    switch(value){
+				    	case "begin extraction":
+				    		if(completedWork == false) {
+					    		confirmOpen();
+					    		confirmState = true;
+				    		}
+				    		else document.getElementById("consoleOutput").value += ("Thank you, but you have already completed your required amount of daily extractions.\n");
+				    		return false;
+				    	case "clear":
+					    	clearCommand();
+					    	return false;
+					    case "hello":
+					    	helloCommand();
+					    	return false;
+
+					    case "pipe -override CDN 29578":
+					    	overrideCommand();
+					    	return false;
+
+					    case "permission status":
+					    	permissionStatusCommand();
+					    	return false;
+
+					    case "open manual":
+					    	open_item('manual');
+					    	return false;
+
+					    case "decrypt E-mail <No Subject>":
+					    	decryptEmail();
+					    	return false;
+
+					    default:
+					    	invalidCommand(value);
+					    	return false;
+				    }
+				  } 
+				});
+
+				//Up Key Pressed
+				$('#textfield').keydown(function (e) {
+				  if (e.which == 38){
+				  	document.getElementById("textfield").value = savedCommand;
+					}
+				});
+
+				$('body').click(function(){
+					$("#context_menu").hide();
+				});
+    		</script>
+
+		</body>
+
+
+	</html>

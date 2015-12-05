@@ -1,0 +1,111 @@
+<html>
+	<head>
+		
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        	<style type="text/css">
+
+			.drag{
+			position:relative;
+			cursor:hand;
+			z-index: 100;
+			}
+
+			form{
+			background-image:url(./img/PPC_WINDOW_CONSOLE.png);
+			
+			background-repeat:no-repeat;
+			height: 52%;
+			width: 44%;
+			font-family:Tahoma;
+			font-size:14px;
+			color:#781351;
+		}
+
+			.consoleBox{
+				position: absolute;
+				top: 435px;
+				left: 20px;
+			}
+
+			</style>
+
+			<script type="text/javascript">
+
+					if (document.addEventListener) {
+			        document.addEventListener('contextmenu', function(e) {
+			            //here you draw your own menu
+			            e.preventDefault();
+			        }, false);
+			    } else {
+			        document.attachEvent('oncontextmenu', function() {
+			            window.event.returnValue = false;
+			        });
+			    }
+
+					var dragobject={
+						z: 0, x: 0, y: 0, offsetx : null, offsety : null, targetobj : null, dragapproved : 0,
+						initialize:function(){
+						document.onmousedown=this.drag
+						document.onmouseup=function(){this.dragapproved=0}
+					},
+					drag:function(e){
+						var evtobj=window.event? window.event : e
+						this.targetobj=window.event? event.srcElement : e.target
+						if (this.targetobj.className=="drag"){
+							this.dragapproved=1
+							if (isNaN(parseInt(this.targetobj.style.left))){this.targetobj.style.left=0}
+							if (isNaN(parseInt(this.targetobj.style.top))){this.targetobj.style.top=0}
+							this.offsetx=parseInt(this.targetobj.style.left)
+							this.offsety=parseInt(this.targetobj.style.top)
+							this.x=evtobj.clientX
+							this.y=evtobj.clientY
+							if (evtobj.preventDefault)
+							evtobj.preventDefault()
+							document.onmousemove=dragobject.moveit
+						}
+					},
+					moveit:function(e){
+					var evtobj=window.event? window.event : e
+					if (this.dragapproved==1){
+					this.targetobj.style.left=this.offsetx+evtobj.clientX-this.x+"px"
+					this.targetobj.style.top=this.offsety+evtobj.clientY-this.y+"px"
+					return false
+					}
+					}
+					}
+
+					dragobject.initialize()
+
+			</script>
+
+
+	</head>
+
+	<body>
+
+		<form id="form1" name="form1" method="post" action="" class="drag">
+			<br/>
+			<div class = "consoleBox">
+			<input type="text" name="textfield" id="textfield" style = "width:375px" />
+			    <label> <br />
+			    	<!--<input type="submit" name="button" id="button" value="Submit" />-->
+			    </label>
+			</div>
+
+		</form>
+
+		<script type="text/javascript">
+
+		$('#textfield').keypress(function (e) {
+		  if (e.which == 13) {
+		    var value = $('#textfield').val();
+			console.log(value);
+			document.getElementById("textfield").value = "";
+		    return false;    //<---- Add this line
+		  }
+		});
+
+		</script>
+
+	</body>
+</html>

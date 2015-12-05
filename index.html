@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+	<html>
+
+		<head>
+        	<link rel="stylesheet" type="text/css" href="style.css" />
+        	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    	</head>
+
+    	<body>
+
+        	<audio id = "mus_intro" oncanplaythrough = "this.play();">
+    	        <source src="mus/ppc_intro.wav"></source>
+    	        Your browser doesn't support audio playback
+        	</audio>
+
+            <audio id = "mus_typing">
+                <source src="mus/keyboard.wav"></source>
+                Your browser doesn't support audio playback
+            </audio>
+
+            <audio id = "mus_success">
+                <source src ="mus/Success.wav"></source>
+            </audio>
+
+            <audio id = "mus_blip">
+                <source src ="mus/Blip.wav"></source>
+            </audio>
+
+            <audio id = "mus_load">
+                <source src ="mus/Blip_load.wav"></source>
+            </audio>
+
+
+
+            <!--<a id = "enterA" href="javascript:delay('./hs1.html')" style="display:block; width:90px; height:33px; position:absolute; left: 560px; top: 510px;"></a>-->
+
+        	<a id = "title-card" style ="position:center;">
+        		<img id = "title-img" src ="./img/title-project.gif" usemap = "EnterButton" style = "display: block; margin-left: auto; margin-right: auto ">
+        	</a>
+
+            <map name="EnterButton">
+                      <area shape="rect" coords="542, 500, 650, 530" href="javascript:delay('./hs1.html')" >
+            <map name="EnterButton2">
+
+        	<script src ="src.js"></script>
+
+            <script type="text/javascript">
+                var enterSound = document.getElementById('mus_typing');
+                var successSound = document.getElementById('mus_success');
+                var blipSound = document.getElementById("mus_blip");
+                var loadSound = document.getElementById("mus_load");
+                function delay (URL) {
+                    //document.getElementById('title-img').src = "./img/title-project-2.gif";
+                    document.getElementById('title-img').useMap = "#EnterButton2"; 
+                    setTimeout( function() { window.location = URL }, 13000 );
+                    setTimeout( function() { successSound.play() }, 2600 );
+                    setTimeout( function() { blipSound.play() }, 4500 );
+                    setTimeout( function() { loadSound.play() }, 5000 );
+                    setTimeout( function() { loadSound.pause(); loadSound.currentTime = 0; }, 7700 );
+                    setTimeout( function() { loadSound.play() }, 8100 );
+                    setTimeout( function() {document.getElementById('title-img').src = "./img/title-loading.gif"}, 4500);
+                    enterSound.play();
+                    document.getElementById('title-img').src = "./img/title-project-21.gif";
+                    document.getElementById('enterA').width = '0px';
+                }
+            </script>
+
+    	</body>
+
+
+	</html>
